@@ -3,9 +3,8 @@ import json
 import tweepy
 from glob import glob
 import requests
-CONFIG=r'C:\Users\eddyizm\HP\config.json'
-folderpath = r'C:\Users\eddyizm\HP\images'
 
+CONFIG=r'C:\Users\eddyizm\HP\config.json'
 
 def get_keys():
     with open(CONFIG, 'r') as myfile:
@@ -47,10 +46,19 @@ def tweet_photos(api, imagepath, text):
         print (f'encountered error! error deets: {e}')
         
 
+def get_folder():
+    settings = get_keys()
+    if os.name == 'nt':
+        return settings["windows"]["image_path"]
+    else:
+        return settings["linux"]["image_path"]
+
+
 def main():
     twitter_api = tweepy_creds()
     tweet_photos(twitter_api)
 
 
 if __name__ == "__main__":
-    main()
+    print(get_folder())
+    

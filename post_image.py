@@ -43,8 +43,8 @@ def tweet_photos(api, imagepath, text):
     x = imagepath
     try:
         api.update_with_media(filename=x, status=status)
-        print('Tweeted! successfully')
-        #TODO try to post to IG, then delete
+        print(f' {imagepath} Tweeted successfully!')
+        # TODO try to post to IG, then delete
         os.remove(imagepath)
     except Exception as e:
         print(f'encountered error! error deets: {e}')
@@ -65,6 +65,5 @@ def main():
 
 
 if __name__ == "__main__":
-    photo = get_images(get_folder())
-    print(photo)
-    print(photo[0], photo[1])
+    main()
+

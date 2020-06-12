@@ -3,7 +3,6 @@ import json
 import tweepy
 from glob import glob
 import time
-import json
 import urllib.request as req
 from random import randrange, shuffle
 
@@ -25,7 +24,7 @@ def get_random_quote():
         # TODO count characters to check if quote is too long and if so loop for another one
         return data[0]['quote']
     except Exception as ex:
-        print (ex)
+        print(ex)
 
 
 def get_keys():
@@ -86,13 +85,12 @@ def search_twtr(api, search_term):
         print(f'searching term: {search_term}')
         for tweet in api.search(q=search_term, lang="en", count=5):
             print(f"{tweet.user.name}:{tweet.text}")
-            data.update({tweet.user.name : tweet.text })
+            data.update({tweet.user.name: tweet.text})
         save_search_results(data)
-        
     except Exception as e:
         print(e)
-    
-    
+
+
 def save_search_results(data):
     with open(SEARCH_LOG, 'w') as json_file:
         json.dump(data, json_file)
@@ -104,6 +102,7 @@ def main():
     photo = get_images(get_folder())
     tweet_photos(twitter_api, photo[0], photo[1])
     # search_twtr(twitter_api, photo[1])
+
 
 if __name__ == "__main__":
     # check_for_tags(r'C:\Users\eddyizm\HP\images\RedRocksBouldering')

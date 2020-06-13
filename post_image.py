@@ -6,7 +6,8 @@ import time
 import urllib.request as req
 from random import randrange, shuffle
 
-CONFIG = r"C:\Users\eddyizm\HP\config.json"
+# CONFIG = r"C:\Users\eddyizm\HP\config.json"
+CONFIG = r"/home/eddyizm/HP/config.json"
 SEARCH_LOG = r'search.json'
 
 
@@ -21,7 +22,8 @@ def get_random_quote():
     ''' get random quote to use as tweet '''
     try:
         data = json.load(req.urlopen('https://eddyizm.com/quotes/random/'))
-        # TODO count characters to check if quote is too long and if so loop for another one
+        # TODO count characters to check if quote is too long and if so loop
+        #  for another one
         return data[0]['quote']
     except Exception as ex:
         print(ex)
@@ -83,9 +85,13 @@ def search_twtr(api, search_term):
     data = {}
     try:
         print(f'searching term: {search_term}')
-        for tweet in api.search(q=search_term, lang="en", count=5):
-            print(f"{tweet.user.name}:{tweet.text}")
-            data.update({tweet.user.name: tweet.text})
+        for tweet in api.search(q=search_term, lang="en", count=1):
+            print(f"{tweet.user.id}, {tweet.user.screen_name},{tweet.id} \
+                ,{tweet.text}")
+            time.sleep(5)
+            data.update({'user': { 'screenname': tweet.user.screen_name, \
+                'userid': tweet.user.id }, 'tweetid' : tweet.id, \
+                'text': tweet.text})
         save_search_results(data)
     except Exception as e:
         print(e)
@@ -97,14 +103,13 @@ def save_search_results(data):
 
 
 def main():
-    time.sleep(randrange(1,3000))
+    # time.sleep(randrange(1 ,3000))
     twitter_api = tweepy_creds()
     photo = get_images(get_folder())
-    tweet_photos(twitter_api, photo[0], photo[1])
-    # search_twtr(twitter_api, photo[1])
+    # tweet_photos(twitter_api, photo[0], photo[1])
+    search_twtr(twitter_api, photo[1])
 
 
 if __name__ == "__main__":
     # check_for_tags(r'C:\Users\eddyizm\HP\images\RedRocksBouldering')
     main()
-

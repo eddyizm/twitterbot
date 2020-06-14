@@ -6,10 +6,10 @@ import time
 import urllib.request as req
 from random import randrange, shuffle
 
-CONFIG = r"C:\Users\eddyizm\HP\config.json"
-# CONFIG = r"/home/eddyizm/HP/config.json"
+# CONFIG = r"C:\Users\eddyizm\HP\config.json"
+CONFIG = r"/home/eddyizm/HP/config.json"
 SEARCH_LOG = r'search.json'
-HASHTAGS = ['#tytlive', '#haiku', '#currentlyreading' ]
+HASHTAGS = ['#tytlive', '#haiku', '#currentlyreading']
 
 
 def check_for_tags(folder: str):
@@ -19,13 +19,26 @@ def check_for_tags(folder: str):
             print(x.readlines())
 
 
+def get_daily_quote():
+    ''' get daily quote to use as tweet '''
+    try:
+        q = json.load(req.urlopen('https://eddyizm.com/quotes/daily/'))
+        print('getting daily quote')
+        qtweet = f'{q[0]["quote"]} #quote #quoteoftheday #quotes #{q[0]["category"]}'
+        if len(qtweet) <= 280:
+            return qtweet
+        return None
+    except Exception as ex:
+        print(ex)
+
+
 def get_random_quote():
     ''' get random quote to use as tweet '''
     try:
         data = json.load(req.urlopen('https://eddyizm.com/quotes/random/'))
         # TODO count characters to check if quote is too long and if so loop
         #  for another one
-        return data[0]['quote']
+        return data
     except Exception as ex:
         print(ex)
 
@@ -121,7 +134,7 @@ def fave_tweet(api, data):
 
                 finally:
                     print('pause...and continue...')
-                    continue        
+                    continue
                     time.sleep(30)
         
     except Exception as ex:
@@ -131,10 +144,13 @@ def fave_tweet(api, data):
 def main():
     time.sleep(randrange(1 ,3000))
     twitter_api = tweepy_creds()
-    photo = get_images(get_folder())
-    tweet_photos(twitter_api, photo[0], photo[1])
-    search_results = search_twtr(twitter_api, photo[1])
-    fave_tweet(twitter_api, search_results)
+    # photo = get_images(get_folder())
+    # tweet_photos(twitter_api, photo[0], photo[1])
+    # search_results = search_twtr(twitter_api, photo[1])
+    # fave_tweet(twitter_api, search_results)
+    tweet = get_daily_quote()
+    if tweet is not None:
+        twitter_api.update_status(status=tweet, attachment_url='https://eddyizm.com/quotes/')
 
 
 if __name__ == "__main__":

@@ -9,7 +9,6 @@ from random import randrange, shuffle
 CONFIG = r"C:\Users\eddyizm\HP\config.json"
 # CONFIG = r"/home/eddyizm/HP/config.json"
 SEARCH_LOG = r'search.json'
-HASHTAGS = ['#tytlive', '#haiku', '#currentlyreading' ]
 
 
 def check_for_tags(folder: str):
@@ -86,16 +85,18 @@ def search_twtr(api, search_term):
     time.sleep(5)
     data = {}
     count = 0
+    HASHTAGS = ['#tytlive', '#haiku', '#KarensGoneWild' '#currentlyreading', search_term ]
     shuffle(HASHTAGS)
-    search_term = f'#{search_term} {HASHTAGS[0]}'
+    sterm = HASHTAGS[0]
     try:
-        print(f'searching term: {search_term}')
-        for tweet in api.search(q=search_term, lang="en", count=5):
+        print(f'searching term: {sterm}')
+        for tweet in api.search(q=sterm, lang="en", count=5):
             data.update({count: { 'screenname': tweet.user.screen_name, \
                 'userid': tweet.user.id , 'tweetid' : tweet.id, \
                 'text': tweet.text}})
             count += 1
-        save_search_results(data)
+        if data:
+            save_search_results(data)
         return data
     except Exception as e:
         print(e)
@@ -115,15 +116,16 @@ def fave_tweet(api, data):
                     api.create_favorite(value["tweetid"])
                     t = value["tweetid"]
                     print(f'added favorite tweetid: {t}')
+                    time.sleep(30)
                     
                 except Exception as ex:
                     print(f'fave faild: {ex}')
-
-                finally:
                     print('pause...and continue...')
                     continue        
                     time.sleep(30)
-        
+        else:
+            print(f'no results in data: {len(data)}' )
+
     except Exception as ex:
         print(ex)
 

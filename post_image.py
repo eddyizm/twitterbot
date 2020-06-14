@@ -6,10 +6,9 @@ import time
 import urllib.request as req
 from random import randrange, shuffle
 
-# CONFIG = r"C:\Users\eddyizm\HP\config.json"
-CONFIG = r"/home/eddyizm/HP/config.json"
+CONFIG = r"C:\Users\eddyizm\HP\config.json"
+# CONFIG = r"/home/eddyizm/HP/config.json"
 SEARCH_LOG = r'search.json'
-HASHTAGS = ['#tytlive', '#haiku', '#currentlyreading']
 
 
 def check_for_tags(folder: str):
@@ -24,7 +23,7 @@ def get_daily_quote():
     try:
         q = json.load(req.urlopen('https://eddyizm.com/quotes/daily/'))
         print('getting daily quote')
-        qtweet = f'{q[0]["quote"]} #quote #quoteoftheday #quotes #{q[0]["category"]}'
+        qtweet = f'{q[0]["quote"]} #quote #quoteoftheday #quotes #{q[0]["category"]}| https://eddyizm.com/quotes/'
         if len(qtweet) <= 280:
             return qtweet
         return None
@@ -99,16 +98,18 @@ def search_twtr(api, search_term):
     time.sleep(5)
     data = {}
     count = 0
+    HASHTAGS = ['#tytlive', '#haiku', '#KarensGoneWild' '#currentlyreading', search_term ]
     shuffle(HASHTAGS)
-    search_term = f'#{search_term} {HASHTAGS[0]}'
+    sterm = HASHTAGS[0]
     try:
-        print(f'searching term: {search_term}')
-        for tweet in api.search(q=search_term, lang="en", count=5):
+        print(f'searching term: {sterm}')
+        for tweet in api.search(q=sterm, lang="en", count=5):
             data.update({count: { 'screenname': tweet.user.screen_name, \
                 'userid': tweet.user.id , 'tweetid' : tweet.id, \
                 'text': tweet.text}})
             count += 1
-        save_search_results(data)
+        if data:
+            save_search_results(data)
         return data
     except Exception as e:
         print(e)
@@ -128,29 +129,27 @@ def fave_tweet(api, data):
                     api.create_favorite(value["tweetid"])
                     t = value["tweetid"]
                     print(f'added favorite tweetid: {t}')
-                    
+                    time.sleep(30)
+
                 except Exception as ex:
                     print(f'fave faild: {ex}')
-
-                finally:
                     print('pause...and continue...')
                     continue
                     time.sleep(30)
-        
+        else:
+            print(f'no results in data: {len(data)}')
+
     except Exception as ex:
         print(ex)
 
 
 def main():
-    time.sleep(randrange(1 ,3000))
+    time.sleep(randrange(1, 3000))
     twitter_api = tweepy_creds()
-    # photo = get_images(get_folder())
-    # tweet_photos(twitter_api, photo[0], photo[1])
-    # search_results = search_twtr(twitter_api, photo[1])
-    # fave_tweet(twitter_api, search_results)
-    tweet = get_daily_quote()
-    if tweet is not None:
-        twitter_api.update_status(status=tweet, attachment_url='https://eddyizm.com/quotes/')
+    photo = get_images(get_folder())
+    tweet_photos(twitter_api, photo[0], photo[1])
+    search_results = search_twtr(twitter_api, photo[1])
+    fave_tweet(twitter_api, search_results)
 
 
 if __name__ == "__main__":

@@ -98,7 +98,7 @@ def search_twtr(api, search_term):
     time.sleep(5)
     data = {}
     count = 0
-    HASHTAGS = ['#tytlive', '#haiku', '#KarensGoneWild' '#currentlyreading', search_term ]
+    HASHTAGS = ['#tytlive ', '#haiku ', '#KarensGoneWild ', '#currentlyreading ', '#python ', '#linux ', '#programming ', '#dotnet', search_term]
     shuffle(HASHTAGS)
     sterm = HASHTAGS[0]
     try:
@@ -116,7 +116,8 @@ def search_twtr(api, search_term):
 
 
 def save_search_results(data):
-    with open(SEARCH_LOG, 'w') as json_file:
+    settings = get_keys()
+    with open(settings["windows"]["search_log"], 'w') as json_file:
         json.dump(data, json_file)
 
 
